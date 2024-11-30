@@ -4,12 +4,10 @@ import {
   Platform,
   Image,
   StyleSheet,
-  Dimensions,
   Alert,
   ActivityIndicator,
-  Text
+  Text,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   check,
   request,
@@ -19,7 +17,6 @@ import {
 } from 'react-native-permissions';
 import {VERSION} from '../../afterWillbeEnv';
 
-const {width, height} = Dimensions.get('window');
 
 const SplashScreen = ({navigation}) => {
   async function requestBluetoothAndLocationAndCameraAndStoragePermissions() {
@@ -162,15 +159,8 @@ const SplashScreen = ({navigation}) => {
     const checkAgentSession = async () => {
       await requestBluetoothAndLocationAndCameraAndStoragePermissions();
       setTimeout(async () => {
-        const token = await AsyncStorage.getItem('agentToken');
-        console.warn(token);
-        if (token) {
-          // If the token exists, navigate directly to the main app
-          navigation.replace('Home'); // Change to your main app screen
-        } else {
-          // If no token, proceed to permission check
-          navigation.replace('Login');
-        }
+        // If the token exists, navigate directly to the main app
+        navigation.replace('HomeDog'); // Change to your main app screen
       }, 1000); // TODO: decrease timeout for production to be 1000
     };
 
@@ -180,16 +170,15 @@ const SplashScreen = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/images/logo.png')}
+        source={require('../assets/images/hh.png')}
         style={styles.logo}
         resizeMode="contain"
       />
-      <ActivityIndicator size="large" color="#30426a" style={{marginTop: 20}} />
+      <ActivityIndicator size="large" color="#d25c3d" style={{marginTop: 20}} />
       <Text style={styles.versionText}>{VERSION}</Text>
     </View>
   );
 };
-const logoSize = Math.min(width, height) * 0.6;
 
 const styles = StyleSheet.create({
   container: {
@@ -199,8 +188,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF', // Change to your preferred background color
   },
   logo: {
-    width: logoSize, // Adjust logo size as needed
-    height: logoSize,
+    width: 350, // Adjust logo size as needed
+    height: 200,
     marginBottom: 20,
   },
   loadingText: {

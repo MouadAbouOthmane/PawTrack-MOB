@@ -14,6 +14,7 @@ import TestScreen from '../screens/TestScreen';
 import BluetoothScreen from '../screens/BluetoothScreen';
 import SearchInfractionScreen from '../screens/SearchInfractionScreen';
 import Dashboard from '../screens/DashboardScreen';
+import HomeDogScreen from '../screens/HomeDogScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -28,6 +29,7 @@ const MainNavigator = () => {
         <Stack.Screen name="Splash" component={SplashScreen} />
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Home" component={Dashboard} />
+        <Stack.Screen name="HomeDog" component={HomeDogScreen} />
         {/* <Stack.Screen name="Home" component={HomeScreen} /> */}
         <Stack.Screen name="Map" component={TestScreen} />
         {/* <Stack.Screen name="Map" component={MapScreen} /> */}

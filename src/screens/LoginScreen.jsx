@@ -1,5 +1,5 @@
 import React, {useState, useRef} from 'react';
-import {View, StyleSheet, Image, Animated, Keyboard} from 'react-native';
+import {View, StyleSheet, Image, Animated} from 'react-native';
 import {
   TextInput,
   Button,
@@ -182,7 +182,7 @@ export default function LoginScreen({navigation}) {
             <Text style={styles.modalTitle}>Authentification</Text>
             <Text style={styles.modalSubtitle}>Carte RFID</Text>
             <Text style={styles.modalText}>
-              Veuillez scanner votre carte RFID pour accéder à l'application.{' '}
+              Veuillez scanner  carte RFID pour accéder à l'application.{' '}
             </Text>
             <IconButton
               icon="contactless-payment"

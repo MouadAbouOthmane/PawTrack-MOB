@@ -1,90 +1,44 @@
-import React, {useRef, useState, useEffect} from 'react';
-import {
-  View,
-  Image,
-  StyleSheet,
-  Animated,
-  NativeEventEmitter,
-  NativeModules,
-} from 'react-native';
-import {
-  Button,
-  IconButton,
-  Modal,
-  Portal,
-  Text,
-  useTheme,
-} from 'react-native-paper';
-import dings from '../assets/sound/bell.wav';
-
-import Sound from 'react-native-sound';
+import React, {useState} from 'react';
+import {View, Image, StyleSheet} from 'react-native';
+import {Button, Text} from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import ScanModal from '../components/ScanModal';
+import {useDogTracking} from '../hooks/DogTrackingContext';
+import Toast from 'react-native-toast-message';
 
-const HomeDogScreen = () => {
+const HomeDogScreen = ({navigation}) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const slideAnim = useRef(new Animated.Value(0)).current;
-  const [rfidValue, setRfidValue] = useState('');
-  const [isListening, setIsListening] = useState(false);
+  const {getDogDetailByUhfTag} = useDogTracking();
 
-  // Initialize sound
-  const ding = new Sound(dings, Sound.MAIN_BUNDLE, error => {
-    console.log(error);
-  });
-  // console.log(dings)
-
-  const theme = useTheme();
-
-  useEffect(() => {
-    let eventEmitter;
-
-    if (isListening) {
-      eventEmitter = new NativeEventEmitter(NativeModules.CalendarModule);
-
-      eventEmitter.addListener('EventReminder', event => {
-        ding.play();
-        setRfidValue(event.eventProperty);
-        hideModal();
-        eventEmitter.removeAllListeners('EventReminder');
-      });
-
-    }
-
-    return () => {
-      if (eventEmitter) {
-        eventEmitter.removeAllListeners('EventReminder');
-      }
-    };
-  }, [isListening]);
+  const [scannedRfid, setScannedRfid] = useState('');
 
   const handleScanDog = () => {
-    console.log('Scan dog pressed');
-    showModal();
+    setScannedRfid('');
+    setModalVisible(true);
   };
 
   const handleAddDog = () => {
     console.log('Add dog pressed');
+    navigation.navigate('DogCreate');
   };
 
-  const hideModal = () => {
-    Animated.timing(slideAnim, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(() => {
-      setModalVisible(false);
-      // setRfidValue('');
-      setIsListening(false); // Stop listening when modal closes
-    });
+  const handleScanComplete = async rfidValue => {
+    setScannedRfid(rfidValue);
+    const dog = await getDogDetailByUhfTag(rfidValue);
+    if (dog) {
+      navigation.navigate('DogDetail', {dogId: dog.id});
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Aucun chien trouvé avec ce tag UHF.',
+        visibilityTime: 1800,
+      });
+    }
+    // Additional logic for handling scanned RFID
   };
 
-  const showModal = () => {
-    setModalVisible(true);
-    setRfidValue('');
-    setIsListening(true); // Start listening when modal opens
-    Animated.spring(slideAnim, {
-      toValue: 1,
-      useNativeDriver: true,
-    }).start();
+  const handleCloseModal = () => {
+    setModalVisible(false);
   };
 
   return (
@@ -94,17 +48,17 @@ const HomeDogScreen = () => {
         style={styles.image}
         resizeMode="contain"
       />
-      <Text>{rfidValue}</Text>
       <View style={styles.buttonContainer}>
         <Button
           mode="contained"
           onPress={handleScanDog}
           style={styles.button}
-          icon={({size, color}) => (
+          labelStyle={{color: '#d25c3d'}}
+          icon={({size}) => (
             <MaterialCommunityIcons
               name="qrcode-scan"
               size={size}
-              color={color}
+              color="#d25c3d"
             />
           )}>
           Scan
@@ -113,55 +67,18 @@ const HomeDogScreen = () => {
           mode="contained"
           onPress={handleAddDog}
           style={styles.button}
-          icon={({size, color}) => (
-            <MaterialCommunityIcons name="dog" size={size} color={color} />
+          labelStyle={{color: '#d25c3d'}}
+          icon={({size}) => (
+            <MaterialCommunityIcons name="dog" size={size} color="#d25c3d" />
           )}>
           Ajouter
         </Button>
       </View>
-      <Portal>
-        <Modal
-          visible={modalVisible}
-          onDismiss={hideModal}
-          contentContainerStyle={styles.modalContainer}>
-          <Animated.View
-            style={[
-              styles.modalContent,
-              {
-                transform: [
-                  {
-                    translateY: slideAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [300, 0],
-                    }),
-                  },
-                ],
-              },
-            ]}>
-            <Text style={styles.modalTitle}>Commencez le scan !</Text>
-            <Text style={styles.modalSubtitle}>Scannez la puce RFID</Text>
-            <Text style={styles.modalText}>
-              Veuillez appuyer sur le bouton de votre PDA pour scanner la puce
-              RFID sur l'oreille du chien.
-            </Text>
-            <IconButton
-              icon="contactless-payment"
-              size={80}
-              iconColor={theme.colors.primary}
-              style={styles.rfidIcon}
-            />
-            <Text style={styles.modalHint}>
-              {isListening ? 'Scanning in progress...' : ''}
-            </Text>
-            <Button
-              mode="outlined"
-              onPress={hideModal}
-              style={styles.closeButton}>
-              Fermer
-            </Button>
-          </Animated.View>
-        </Modal>
-      </Portal>
+      <ScanModal
+        visible={modalVisible}
+        onDismiss={handleCloseModal}
+        onScan={handleScanComplete}
+      />
     </View>
   );
 };
@@ -172,6 +89,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: 16,
+    backgroundColor: '#d25c3d',
   },
   image: {
     width: 350,
@@ -188,6 +106,8 @@ const styles = StyleSheet.create({
   button: {
     flex: 1, // Make buttons occupy equal space
     marginHorizontal: 8, // Add horizontal spacing between buttons
+    backgroundColor: 'white',
+    color: '#d25c3d',
   },
 
   modalContainer: {

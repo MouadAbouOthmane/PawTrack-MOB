@@ -9,6 +9,7 @@ import {DefaultTheme, PaperProvider} from 'react-native-paper';
 // import {loadDefaultPrinterAddress} from './src/redux/slices/settingsSlice';
 import {Text, View} from 'react-native';
 import {PersistGate} from 'redux-persist/integration/react';
+import {DogTrackingProvider} from './src/hooks/DogTrackingContext';
 
 // Custom hook to handle initial data loading
 // const useInitialDataLoad = () => {
@@ -50,7 +51,11 @@ import {PersistGate} from 'redux-persist/integration/react';
 
 const AppWrapper = () => {
   // useInitialDataLoad();
-  return <MainNavigator />;
+  return (
+    <DogTrackingProvider>
+      <MainNavigator />
+    </DogTrackingProvider>
+  );
 };
 
 // Error boundary to catch rendering errors
@@ -99,19 +104,41 @@ const dogTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
+    // Existing colors
     primary: '#d25c3d', // Rusty orange-red (main project color)
     accent: '#8B4513', // Saddle brown (complementary dog-related tone)
     background: '#F5F5DC', // Beige (like dog's coat or kennel)
     surface: '#FFFFFF', // Clean white
     text: '#333333', // Dark gray for readability
 
-    // Dog-themed custom colors
+    // Expanded color keys
+    primaryContainer: '#FFE5D9', // Very light version of primary, soft background for primary elements
+    onPrimaryContainer: '#3C1612', // Dark text color for primaryContainer
+    primaryVariant: '#B04030', // Slightly darker shade of primary
+
+    secondaryContainer: '#F0C6B8', // Soft muted version of primary tone
+    onSecondaryContainer: '#3C1612', // Text color for secondary container
+
+    tertiaryContainer: '#E7C3B3', // Another variation in the warm color palette
+    onTertiaryContainer: '#3C1612', // Text color for tertiary container
+
+    // Existing dog-themed custom colors
     dogPaw: '#6F4E37', // Coffee brown
     dogCollar: '#4A2D0F', // Deep brown
     dogBark: '#D2691E', // Darker orange shade
+
+    // Error and feedback colors
+    error: '#B3261E', // Standard error red
+    errorContainer: '#F9DEDC', // Light error background
+    onError: '#FFFFFF', // White text on error
+
+    // Neutral color variations
+    neutralVariant: '#79747E', // Neutral gray with a hint of warmth
+    neutralVariantContainer: '#E7E0EC', // Light neutral container
+    onNeutralVariant: '#1D1B20', // Text color for neutral variant
   },
 
-  // Custom typography with a friendly, approachable feel
+  // Keep existing fonts and other theme properties
   fonts: {
     ...DefaultTheme.fonts,
     regular: 'Roboto-Regular',
@@ -119,7 +146,6 @@ const dogTheme = {
     light: 'Roboto-Light',
   },
 
-  // Custom spacing and roundness for a playful dog theme
   roundness: 10, // Slightly rounded corners
 };
 const App = () => {
@@ -161,41 +187,41 @@ export default App;
 //   const [Mydata, setMyData] = useState([]);
 //   const [id, Setid] = useState(0);
 //   const [LoadData, setLoadData] = useState(true);
-  // const ding = new Sound(dings, Sound.MAIN_BUNDLE, error => {
-  //   console.log(error);
-  // });
-  // let object;
-  // let a;
-  // const OnpressFunction = value => {
-  //   ding.play();
-  //   a = Mydata;
-  //   var __FOUND = a.find(function (post, index) {
-  //     if (post.name == value) return true;
-  //   });
-  //   object = {id: a.length + 1, name: value};
+// const ding = new Sound(dings, Sound.MAIN_BUNDLE, error => {
+//   console.log(error);
+// });
+// let object;
+// let a;
+// const OnpressFunction = value => {
+//   ding.play();
+//   a = Mydata;
+//   var __FOUND = a.find(function (post, index) {
+//     if (post.name == value) return true;
+//   });
+//   object = {id: a.length + 1, name: value};
 
-  //   if (__FOUND == undefined) {
-  //     a.push(object);
-  //     setMyData(a);
-  //   }
-  //   SetLoading(false);
-  // };
+//   if (__FOUND == undefined) {
+//     a.push(object);
+//     setMyData(a);
+//   }
+//   SetLoading(false);
+// };
 
-  // useEffect(() => {
-  //   let eventEmitter;
-  //   if (LoadData === true) {
-  //     eventEmitter = new NativeEventEmitter(NativeModules.CalendarModule);
+// useEffect(() => {
+//   let eventEmitter;
+//   if (LoadData === true) {
+//     eventEmitter = new NativeEventEmitter(NativeModules.CalendarModule);
 
-  //     eventEmitter.addListener('EventReminder', event => {
-  //       SetLoading(true);
-  //       OnpressFunction(event.eventProperty);
-  //       console.log(event.eventProperty);
-  //     });
-  //   }
-  //   return () => {
-  //     eventEmitter.removeAllListeners('EventReminder');
-  //   }
-  // }, [LoadData]);
+//     eventEmitter.addListener('EventReminder', event => {
+//       SetLoading(true);
+//       OnpressFunction(event.eventProperty);
+//       console.log(event.eventProperty);
+//     });
+//   }
+//   return () => {
+//     eventEmitter.removeAllListeners('EventReminder');
+//   }
+// }, [LoadData]);
 
 //   return (
 //     <View>
